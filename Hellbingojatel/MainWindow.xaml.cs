@@ -1,480 +1,303 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IO.Ports;
 using System.Linq;
-using System.Net;
-using System.Runtime.InteropServices;
-using System.Security.RightsManagement;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Markup;
 using System.Windows.Media;
-using System.Windows.Media.Effects;
-using System.Windows.Media.Imaging;
-using System.Windows.Media.Media3D;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Xml.Linq;
+using System.Diagnostics; // Kell a Trace-hez
 
 namespace Hellbingojatel
 {
-
     public partial class MainWindow : Window
     {
-        //game numbers int, string
-        public int[] numbers = new int[16];
+        // --- 1. JAVÍTÁS: Class használata Struct helyett ---
+        // Így már módosíthatóak lesznek az adatok a listában (CS1612 hiba megoldva)
+        public class EnPlayers
+        {
+            public string enPlayerName;
+            public int[] enPlayerNumbers;
+            public int enPlayPulledNums;
+        }
+        
+        // Ellenségek listája
+        List<EnPlayers> enPlayer = new List<EnPlayers>();
 
-        //personal numbers
-        public int[] mynumberst = new int[4];
-        public int[] ennumberst = new int[4];
+        // Saját játékos osztálya
+        public class MyPlayer
+        {
+            public int[] myPlayerNumbers;
+            public int myPlayPulledNums; 
+        }
+        MyPlayer player = new MyPlayer();
 
-        //money
+        // --- 2. JAVÍTÁS: A kihúzott számok listája itt van, nem a gombnyomásban ---
+        // Így nem törlődik minden körben.
+        public List<int> pulledNumbers = new List<int>();
+
+        // Pénz és powerup változók
         public int moneyink = 15;
-        //powerups
         public int changenumber = 0;
         public int enemymissround = 0;
         public int wildcards = 0;
-
-        // Whose round is it
-        public string[] whoseround = new string[2];
-        //random generator
-        Random rand = new Random();
-
-        //whatnight
         public int night = 1;
 
+        // Powerup ablak állapota
+        public bool powerupwindowopen = false;
 
         public MainWindow()
         {
             InitializeComponent();
+            
+            // Kezdeti láthatóságok beállítása
             game.Visibility = Visibility.Hidden;
             buyphase.Visibility = Visibility.Hidden;
             Won.Visibility = Visibility.Hidden;
-            // Generate 16 random numbers between 1 and 100 to play bingo with
-            for (int i = 0; i < 16; i++)
-            {
-                var num = 0;
-                do
-                {
-                    num = rand.Next(1, 100);
-                }
-                while (numbers.Contains(num));
-                numbers[i] = num;
-            }
+            powerupwindow.Visibility = Visibility.Hidden;
         }
 
-
-        // START BUY PHASE
-        private void StartButton_Click(object sender, RoutedEventArgs e) 
+        // --- START BUY PHASE (Bolt megnyitása) ---
+        private void StartButton_Click(object sender, RoutedEventArgs e)
         {
-
             menu.Visibility = Visibility.Hidden;
             game.Visibility = Visibility.Hidden;
             buyphase.Visibility = Visibility.Visible;
             powerupwindow.Visibility = Visibility.Hidden;
 
+            UpdateUI(); // Kiírjuk a pénzt és a powerupokat
+        }
 
+        // Segédfüggvény a UI frissítéshez (hogy ne kelljen mindig leírni ugyanazt)
+        private void UpdateUI()
+        {
             inkcount.Content = "Your Inks: " + moneyink;
-
             numberchangercount.Content = "Your Number Changes: " + changenumber;
             enemymissroundcount.Content = "Your Enemy Miss Rounds: " + enemymissround;
-            wildcardcount.Content = "Your Wildcards: " + changenumber;
-
+            wildcardcount.Content = "Your Wildcards: " + wildcards;
         }
 
-        //POWERUPS BUYPHASE
-        // Buy number changer
-        private void Button_Click_1(object sender, RoutedEventArgs e)
-        {
-            if (moneyink >= 5)
-            {
-                moneyink -= 5;
-                changenumber += 1;
-                inkcount.Content = "Your Inks: " + moneyink;
-                numberchangercount.Content = "Your Number Changes: " + changenumber;
-                numberchangercount.Foreground = Brushes.Green;
-                currentstatus.Content = "You bought a Number Changer!";
-                currentstatus.Foreground = Brushes.Green;
-            }
-            else
-            {
-                currentstatus.Content = "Not enough Inks!";
-                currentstatus.Foreground = Brushes.Red;
-            }
-        }
-
-        // Buy miss round
-        private void Button_Click_3(object sender, RoutedEventArgs e)
-        {
-            if (moneyink >= 10)
-            {
-                moneyink -= 10;
-                enemymissround += 1;
-                inkcount.Content = "Your Inks: " + moneyink;
-                enemymissroundcount.Content = "Your Enemy Miss Rounds: " + enemymissround;
-                enemymissroundcount.Foreground = Brushes.Green;
-                currentstatus.Content = "You bought an Enemy Miss Round!";
-                currentstatus.Foreground = Brushes.Green;
-
-            }
-            else
-            {
-                currentstatus.Content = "Not enough Inks!";
-                currentstatus.Foreground = Brushes.Red;
-            }
-
-        }
-        // buy wildcard
-        private void Button_Click_6(object sender, RoutedEventArgs e)
-        {
-            if (moneyink >= 15)
-            {
-                moneyink -= 15;
-                wildcards += 1;
-                inkcount.Content = "Your Inks: " + moneyink;
-                wildcardcount.Content = "Your Wildcards: " + wildcards;
-                wildcardcount.Foreground = Brushes.Green;
-                currentstatus.Content = "You bought a Wildcard!";
-                currentstatus.Foreground = Brushes.Green;
-            }
-            else
-            {
-                currentstatus.Content = "Not enough Inks!";
-                currentstatus.Foreground = Brushes.Red;
-            }
-        }
-
-
-        // Start Game
-        public async void Button_Click(object sender, RoutedEventArgs e) 
+        // --- GAME START (Játék indítása) ---
+        public async void Button_Click(object sender, RoutedEventArgs e)
         {
             game.Visibility = Visibility.Visible;
             buyphase.Visibility = Visibility.Hidden;
             menu.Visibility = Visibility.Hidden;
+            Won.Visibility = Visibility.Hidden;
 
-            string[] enemies = { "Dr. Frankeinsten", "Skeleton", "Schizoprhenic", "Guard" };
-            Random rand = new Random();
-            var enemynumber = rand.Next(enemies.Length);
-            enemynamelabel.Content = enemies[enemynumber] + "'s numbers:";
+            // FONTOS: Töröljük az előző játék adatait!
+            enPlayer.Clear();
+            pulledNumbers.Clear(); 
+
+            var random = new Random();
+
+            // 1. Ellenségek generálása (50 db)
+            for (int i = 0; i < 50; i++)
+            {
+                EnPlayers enemyPlayer = new EnPlayers();
+                enemyPlayer.enPlayerName = "player" + (i + 1);
+                // A számgenerálást kiszerveztük egy külön függvénybe (lásd lentebb)
+                enemyPlayer.enPlayerNumbers = GenerateBingoNumbers(random); 
+                enemyPlayer.enPlayPulledNums = 0;
+                enPlayer.Add(enemyPlayer);
+            }
+
+            // 2. Saját játékos generálása
+            player.myPlayerNumbers = GenerateBingoNumbers(random);
+            player.myPlayPulledNums = 0;
+
             nightscount.Content = "Night: " + night;
 
-            // Put two names in whoseround array
-            whoseround[0] = "Player";
-            whoseround[1] = enemies[enemynumber];
-
-            // Generate four random numbers for both player and enemy
-            mynumberst[0] = rand.Next(1, 100);
-            mynumberst[1] = numbers[rand.Next(numbers.Length)];
-            mynumberst[2] = rand.Next(1, 100);
-            mynumberst[3] = numbers[rand.Next(numbers.Length)];
-
-            ennumberst[0] = rand.Next(1, 100);
-            ennumberst[1] = numbers[rand.Next(numbers.Length)];
-            ennumberst[2] = rand.Next(1, 100);
-            ennumberst[3] = numbers[rand.Next(numbers.Length)];
-
-            //shufle personal numbers
-            mynumberst = mynumberst.OrderBy(x => rand.Next()).ToArray();
-            ennumberst = ennumberst.OrderBy(x => rand.Next()).ToArray();
-
-            // Display the numbers in the labels
-            mynumberslabel.Content += $" {mynumberst[0]}, {mynumberst[1]}, {mynumberst[2]}, {mynumberst[3]}";
-            enemynamelabel.Content += $" {ennumberst[0]}, {ennumberst[1]}, {ennumberst[2]}, {ennumberst[3]}";
-
-            // Shuffle and assign numbers to my buttons
-            Random rnd = new Random();
-            int[] mnumbers = numbers.OrderBy(x => rnd.Next()).ToArray();
-
-            for (int i = 1; i <= 16; i++)
+            // 3. Gombok beállítása (m1, m2 ... m15)
+            int index = 1;
+            foreach (var num in player.myPlayerNumbers)
             {
-                var btn = (Button)FindName($"m{i}");
+                var btn = (Button)FindName($"m{index}");
                 if (btn != null)
                 {
-                    btn.Content = mnumbers[i - 1];
+                    btn.Content = num;
+                    btn.Background = Brushes.White; // Visszaállítjuk fehérre
                 }
+                index++;
             }
 
-            // Shuffle and assign numbers to enemy buttons
-            int[] enumbers = numbers.OrderBy(x => rnd.Next()).ToArray();
-            for (int i = 1; i <= 16; i++)
+            // Diagnosztika kiírása
+            foreach (var item in enPlayer)
             {
-                var btn = (Button)FindName($"e{i}");
-                if (btn != null)
-                {
-                    btn.Content = enumbers[i - 1];
-                }
+                Trace.WriteLine("Enemy: " + item.enPlayerName + " Nums: " + string.Join(", ", item.enPlayerNumbers));
             }
 
+            // Kis várakozás a kezdés előtt
             nextround.IsEnabled = false;
             await Task.Delay(1500);
             nextround.IsEnabled = true;
-            statuscsheckeringame.Content = "It is your turn";
-            statuscsheckeringame.Foreground = Brushes.Green;
-            var starter = rand.Next(1,16);
-            var sbtn = (Button)FindName($"m{starter}");
-            sbtn.Background = Brushes.Green;
-            alreadyactme.Add(starter);
-
         }
 
-        //PLAYGAME
-        // Next round button
-        public int curr = 0;
-        public List<int> alreadyactme = new List<int>();
-        public List<int> alreadyacten = new List<int>();
-        public int i = 0;
-        public List<string> mybuttons = new List<string>();
-        public List<string> enemybuttons = new List<string>();
-
-        public string[,] winning = new string[10, 4]
+        // --- SEGÉDFÜGGVÉNY: 15 EGYEDI SZÁM GENERÁLÁSA ---
+        private int[] GenerateBingoNumbers(Random random)
         {
-            //sorok
-            {"m1","m2","m3","m4" },
-            {"m5","m6","m7","m8" },
-            {"m9","m10","m11","m12" },
-            {"m13","m14","m15","m16"  },
+            HashSet<int> numbers = new HashSet<int>();
+            // Addig generálunk, amíg nincs meg a 15 különböző szám
+            while (numbers.Count < 15)
+            {
+                numbers.Add(random.Next(1, 91));
+            }
+            return numbers.ToArray();
+        }
 
-            //oszlopok
-            {"m1","m5","m9","m13" },
-            {"m2","m6","m10","m14" },
-            {"m3","m7","m11","m15" },
-            {"m4","m8","m12","m16" },
-
-            //átlók
-            {"m1","m6","m11","m16" },
-            {"m4","m7","m10","m13" }
-        };
-
-        
+        // --- NEXT ROUND (Számhúzás) ---
         private void nextround_Click(object sender, RoutedEventArgs e)
         {
-            //check if all numbers pulled
-            if (alreadyactme.Count + alreadyacten.Count == 32)
+            var random = new Random();
+            
+            // Ha már minden számot kihúztak (biztonsági ellenőrzés)
+            if (pulledNumbers.Count >= 90)
             {
-                statuscsheckeringame.Content = "All numbers have been pulled!";
-                statuscsheckeringame.Foreground = Brushes.White;
-                nextround.IsEnabled = false;
+                MessageBox.Show("Vége a játéknak, minden szám kihúzva!");
                 return;
             }
 
-            //enemyturn
-            if (whoseround[curr] == "Player")
+            // 1. Új szám húzása (ami még nem szerepel a pulledNumbers listában)
+            int currentPulledNumber = 0;
+            bool isNew = false;
+            while (!isNew)
             {
-                powerupwindowopen = false;
-                powerupwindow.Visibility = Visibility.Hidden;
-                statuscsheckeringame.Content = $"It is {whoseround[1]}'s turn";
-                statuscsheckeringame.Foreground = Brushes.Red;
-
-                var activate = 0;
-                do
+                currentPulledNumber = random.Next(1, 91);
+                if (!pulledNumbers.Contains(currentPulledNumber))
                 {
-                    activate = rand.Next(1, 17);
+                    pulledNumbers.Add(currentPulledNumber);
+                    isNew = true;
                 }
-                while (alreadyacten.Contains(activate));
+            }
 
-                var btn = (Button)FindName($"e{activate}");
-                btn.Background = Brushes.Red;
-                alreadyacten.Add(activate);
-                enemybuttons.Add($"m{activate}");
+            statuscsheckeringame.Content = "Number Pulled: " + currentPulledNumber;
 
-                for (i = 0; i < ennumberst.Length; i++)
+            // 2. Ellenségek ellenőrzése
+            foreach (var enemy in enPlayer)
+            {
+                // Mivel Class-t használunk, ez a módosítás megmarad!
+                if (enemy.enPlayerNumbers.Contains(currentPulledNumber))
                 {
-                    if ((int)btn.Content == ennumberst[i])
+                    enemy.enPlayPulledNums++;
+                    
+                    // Nyert az ellenség?
+                    if (enemy.enPlayPulledNums >= 15)
                     {
-                        statuscsheckeringame.Content = $"Enemy pulled his number {ennumberst[i]}!";
-                        statuscsheckeringame.Foreground = Brushes.Violet;
-                        btn.Background = Brushes.Violet;
+                        MessageBox.Show(enemy.enPlayerName + " nyert! Vesztettél.");
+                        // Itt lehetne resetelni a játékot vagy visszalépni a menübe
+                        return;
                     }
                 }
-
-                if (HasWinningLine(enemybuttons))
-                {
-                    statuscsheckeringame.Content = "Enemy Won! You Lose";
-                    statuscsheckeringame.Foreground = Brushes.DarkRed;
-                    nextround.IsEnabled = false;
-                }
-                curr = 1;
             }
-            //myturn
-            else if (whoseround[curr] != "Player")
+
+            // 3. Saját számok ellenőrzése
+            bool numberFound = false;
+            for (int i = 0; i < player.myPlayerNumbers.Length; i++)
             {
-                powerupwindowopen = true;                
-                statuscsheckeringame.Content = "It is your turn";
-                statuscsheckeringame.Foreground = Brushes.Green;
-
-                var activate = 0;
-                do
+                if (player.myPlayerNumbers[i] == currentPulledNumber)
                 {
-                    activate = rand.Next(1, 17);
-                }
-                while (alreadyactme.Contains(activate));
+                    numberFound = true;
+                    player.myPlayPulledNums++;
 
-                var btn = (Button)FindName($"m{activate}");
-                btn.Background = Brushes.Green;
-                alreadyactme.Add(activate);
-                mybuttons.Add($"m{activate}");
-
-
-                for (i = 0; i < mynumberst.Length; i++)
-                {
-                    if((int)btn.Content == mynumberst[i])
+                    // Megkeressük a megfelelő gombot és zöldre színezzük
+                    var btn = (Button)FindName($"m{i + 1}");
+                    if (btn != null)
                     {
-                        statuscsheckeringame.Content = $"You pulled your number {mynumberst[i]}!";
-                        statuscsheckeringame.Foreground = Brushes.Yellow;
-                        btn.Background = Brushes.Yellow;
+                        btn.Background = Brushes.LightGreen;
+                        btn.Content = "X " + player.myPlayerNumbers[i];
+                    }
+
+                    // Nyertünk?
+                    if (player.myPlayPulledNums >= 15)
+                    {
+                        Won.Visibility = Visibility.Visible;
                     }
                 }
-
-               if (HasWinningLine(mybuttons))
-                {
-
-                    game.Visibility = Visibility.Hidden;
-                    Won.Visibility = Visibility.Visible;
-                    nightsurvivedwonsc.Content = "Nights survived: " + night;
-                    night += 1;
-                    moneyink += 20;
-
-                }
-
-
-                curr = 0;
             }
-            
         }
 
-       //Winninglane choice
-        bool HasWinningLine(List<string> active)
-        {
-            for (int i = 0; i < winning.GetLength(0); i++)
-            {
-                bool allMatch = true;
-
-                for (int j = 0; j < winning.GetLength(1); j++)
-                {
-                    if (!active.Contains(winning[i, j]))
-                    {
-                        allMatch = false;
-                        break;
-                    }
-                }
-
-                if (allMatch)
-                    return true; // van nyerő sor
-            }
-
-            return false; // nincs nyerő sor
-        }
-
-
-        // Go to next night
+        // --- KÖVETKEZŐ ÉJSZAKA (Next Night) ---
         private void Button_Click_7(object sender, RoutedEventArgs e)
         {
+            night++;
             StartButton_Click(sender, e);
             Won.Visibility = Visibility.Hidden;
-            
         }
 
+        // --- POWERUPOK VÁSÁRLÁSA ---
 
+        // Buy number changer (Ára: 5)
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            BuyItem(5, ref changenumber, "Number Changer");
+        }
 
-        // POWERUPS IN GAME
-        // Open,close powerup window
-        public bool powerupwindowopen = false;
+        // Buy miss round (Ára: 10)
+        private void Button_Click_3(object sender, RoutedEventArgs e)
+        {
+            BuyItem(10, ref enemymissround, "Enemy Miss Round");
+        }
+
+        // Buy wildcard (Ára: 15)
+        private void Button_Click_6(object sender, RoutedEventArgs e)
+        {
+            BuyItem(15, ref wildcards, "Wildcard");
+        }
+
+        // Közös vásárló függvény
+        private void BuyItem(int cost, ref int itemStock, string itemName)
+        {
+            if (moneyink >= cost)
+            {
+                moneyink -= cost;
+                itemStock++;
+                UpdateUI();
+                currentstatus.Content = $"You bought a {itemName}!";
+                currentstatus.Foreground = Brushes.Green;
+            }
+            else
+            {
+                currentstatus.Content = "Not enough Inks!";
+                currentstatus.Foreground = Brushes.Red;
+            }
+        }
+
+        // --- EGYÉB FUNKCIÓK ---
+
+        // Powerup ablak nyitás/zárás
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
-            if (powerupwindowopen == false && curr == 0)
+            powerupwindowopen = !powerupwindowopen;
+            if (powerupwindowopen)
             {
                 powerupwindow.Visibility = Visibility.Visible;
                 numberchangerpowerup.Content = "Available: " + changenumber;
                 enemymissroundpowerup.Content = "Available: " + enemymissround;
                 wildcardpowerup.Content = "Available: " + wildcards;
-                powerupwindowopen = true;
             }
-            else if (powerupwindowopen == true)
+            else
             {
-                powerupwindow.Visibility = Visibility.Hidden;
-                powerupwindowopen = false;
-            }
-        }
-
-
-        // Use number changer in game
-        private void usenumberchanger_Click(object sender, RoutedEventArgs e)
-        {
-            if (changenumber > 0)
-            {
-                changenumber -= 1;
-                numberchangerpowerup.Content = "Available: " + changenumber;
-                var st = rand.Next(0, mynumberst.Length);
-                var nd = rand.Next(0, numbers.Length);
-                statuscsheckeringame.Content = $"Number {mynumberst[st]} changed to {numbers[nd]}";
-                statuscsheckeringame.Foreground = Brushes.Blue;
-                mynumberst[st] = numbers[nd];
-                powerupwindow.Visibility = Visibility.Hidden;
-                mynumberslabel.Content = $"Your numbers: {mynumberst[0]}, {mynumberst[1]}, {mynumberst[2]}, {mynumberst[3]}";
-            }
-        }
-
-        // Use enemy miss round in game
-        private void useenemymissround_Click(object sender, RoutedEventArgs e)
-        {
-            if(enemymissround > 0)
-            {
-                enemymissround -= 1;
-                enemymissroundpowerup.Content = "Available: " + enemymissround;
-                statuscsheckeringame.Content = $"{whoseround[1]}'s next round is skipped!";
-                statuscsheckeringame.Foreground = Brushes.Blue;
-                enemymissroundcount.Content = "Enemy Miss Rounds: " + enemymissround;
                 powerupwindow.Visibility = Visibility.Hidden;
             }
         }
 
-        // use wildcard in game
-        private void kaka2_Click(object sender, RoutedEventArgs e)
-        {
-            if(wildcards > 0)
-            {
-                wildcards -= 1;
-                wildcardcount.Content = "Available: " + wildcards;
-                statuscsheckeringame.Content = "Wildcard used";
-                statuscsheckeringame.Foreground = Brushes.Blue;
-                wildcardpowerup.Content = "Available: " + wildcards;
-                powerupwindow.Visibility = Visibility.Hidden;
-            }
-        }
+        // Powerup használat (egyelőre üres)
+        private void usenumberchanger_Click(object sender, RoutedEventArgs e) { }
+        private void useenemymissround_Click(object sender, RoutedEventArgs e) { }
+        private void kaka2_Click(object sender, RoutedEventArgs e) { }
 
-
-
-
-
-
-
-
-
-
-
-        //TESTING CHEATS
-        //infinit ink cheat for testing
+        // Végtelen pénz cheat
         private void Button_Click_4(object sender, RoutedEventArgs e)
         {
             moneyink = 9999999;
-
+            UpdateUI();
         }
-        // Back to menu
+
+        // Vissza a menübe
         private void Button_Click_5(object sender, RoutedEventArgs e)
         {
             game.Visibility = Visibility.Hidden;
             menu.Visibility = Visibility.Visible;
             powerupwindow.Visibility = Visibility.Hidden;
         }
-
     }
 }
-
-
-

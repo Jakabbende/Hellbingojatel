@@ -19,14 +19,13 @@
             <Button Content="Infinit ink" HorizontalAlignment="Left" Margin="607,475,0,0" VerticalAlignment="Top" Height="46" Width="229" Click="Button_Click_4"/>
 
         </Grid>
-        <Grid x:Name="game" d:IsHidden="True">
+        <Grid x:Name="game">
             <Label x:Name="statuscsheckeringame" Content="Welcome to Horror Bingo" HorizontalAlignment="Center" Margin="0,21,0,0" VerticalAlignment="Top" Height="56" Width="440" Foreground="#FFB20000" FontSize="36"/>
-            <Label Content="Your numbers:" x:Name="mynumberslabel" FontSize="25" FontWeight="SemiBold" Foreground="White" FontFamily = "Segoe Script" Margin="115,538,800,42"/>
-            <Label x:Name="enemynamelabel" Content="a" FontSize="25" Margin="784,538,46,42"  Foreground="Red" FontFamily = "Segoe Script" FontWeight = "UltraBold"/>
-            <Button x:Name="nextround" Content="Next Round" HorizontalAlignment="Center" Margin="0,443,0,0" VerticalAlignment="Top" Height="59" Width="230" FontSize="36" Background="#00DDDDDD" BorderBrush="#00707070" Foreground="#FF9D0A0A" FontWeight="UltraBold" FontFamily="Corbel" Click="nextround_Click"/>
+            <Label Content="Your numbers:" x:Name="mynumberslabel" FontSize="25" FontWeight="SemiBold" Foreground="White" FontFamily = "Segoe Script" Margin="115,180,1056,449"/>
+            <Button x:Name="nextround" Content="Next Round" HorizontalAlignment="Left" Margin="1073,496,0,0" VerticalAlignment="Top" Height="59" Width="230" FontSize="36" Background="#00DDDDDD" BorderBrush="#00707070" Foreground="#FF9D0A0A" FontWeight="UltraBold" FontFamily="Corbel" Click="nextround_Click"/>
             <Button x:Name="home" Content="backtohome" HorizontalAlignment="Left" Margin="40,39,0,0" VerticalAlignment="Top" Click="Button_Click_5"/>
-            <Button x:Name="powerupsbutton" Content="Powerups" FontSize="30px"  HorizontalAlignment="Center" Margin="0,363,0,0" VerticalAlignment="Top" Height="66" Width="152" Background="#00DDDDDD" BorderBrush="#01707070" Foreground="#FF526FFF" Click="Button_Click_2"/>
-            <Grid x:Name="powerupwindow" Margin="530,84,530,304">
+            <Button x:Name="powerupsbutton" Content="Powerups" FontSize="30px"  HorizontalAlignment="Left" Margin="881,480,0,0" VerticalAlignment="Top" Height="66" Width="152" Background="#00DDDDDD" BorderBrush="#01707070" Foreground="#FF526FFF" Click="Button_Click_2"/>
+            <Grid x:Name="powerupwindow" Margin="863,151,197,237">
                 <Button Content="Use" x:Name="usenumberchanger" HorizontalAlignment="Left" Margin="254,43,0,0" VerticalAlignment="Top" Height="49" Width="142" Click="usenumberchanger_Click"/>
                 <Button Content="Use" x:Name="useenemymissround" HorizontalAlignment="Left" Margin="254,128,0,0" VerticalAlignment="Top" Height="44" Width="142" Click="useenemymissround_Click"/>
                 <Button Content="Use" x:Name="kaka2" HorizontalAlignment="Left" Margin="254,205,0,0" VerticalAlignment="Top" Height="44" Width="142" Click="kaka2_Click"/>
@@ -37,43 +36,24 @@
                 <Label Content="Wild card" FontSize="22px" Foreground="White" HorizontalAlignment="Left" Margin="32,194,0,0" VerticalAlignment="Top"/>
                 <Label Content="3" x:Name="wildcardpowerup" FontSize="18px" Foreground="green" HorizontalAlignment="Left" Margin="57,220,0,0" VerticalAlignment="Top" Width="118"/>
             </Grid>
-            <Grid x:Name="mynumbers" Margin="115,39,870,182">
+            <Grid x:Name="mynumbers" Margin="115,219,800,94">
                 <Button x:Name="m1" FontSize="40px" HorizontalAlignment="Left" Width="75" Height="75" Margin="50,50,0,0" VerticalAlignment="Top" FontFamily = "Segoe Script" FontWeight = "UltraBold"/>
                 <Button x:Name="m2" FontSize="40px" HorizontalAlignment="Left" Width="75" Height="75" Margin="150,50,0,0" VerticalAlignment="Top" FontFamily = "Segoe Script" FontWeight = "UltraBold"/>
                 <Button x:Name="m3" FontSize="40px" HorizontalAlignment="Left" Width="75" Height="75" Margin="250,50,0,0" VerticalAlignment="Top" FontFamily = "Segoe Script" FontWeight = "UltraBold"/>
                 <Button x:Name="m4" FontSize="40px" HorizontalAlignment="Left" Width="75" Height="75" Margin="350,50,0,0" VerticalAlignment="Top" FontFamily = "Segoe Script" FontWeight = "UltraBold"/>
-                <Button x:Name="m5" FontSize="40px" HorizontalAlignment="Left" Width="75" Height="75" Margin="50,150,0,0" VerticalAlignment="Top" FontFamily = "Segoe Script" FontWeight = "UltraBold"/>
-                <Button x:Name="m6" FontSize="40px" HorizontalAlignment="Left" Width="75" Height="75" Margin="150,150,0,0" VerticalAlignment="Top" FontFamily = "Segoe Script" FontWeight = "UltraBold"/>
-                <Button x:Name="m7" FontSize="40px" HorizontalAlignment="Left" Width="75" Height="75" Margin="250,150,0,0" VerticalAlignment="Top" FontFamily = "Segoe Script" FontWeight = "UltraBold"/>
-                <Button x:Name="m8" FontSize="40px" HorizontalAlignment="Left" Width="75" Height="75" Margin="350,150,0,0" VerticalAlignment="Top" FontFamily = "Segoe Script" FontWeight = "UltraBold"/>
-                <Button x:Name="m9" FontSize="40px" HorizontalAlignment="Left" Width="75" Height="75" Margin="50,250,0,0" VerticalAlignment="Top" FontFamily = "Segoe Script" FontWeight = "UltraBold"/>
-                <Button x:Name="m10" FontSize="40px" HorizontalAlignment="Left" Width="75" Height="75" Margin="150,250,0,0" VerticalAlignment="Top" FontFamily = "Segoe Script" FontWeight = "UltraBold"/>
-                <Button x:Name="m11" FontSize="40px" HorizontalAlignment="Left" Width="75" Height="75" Margin="250,250,0,0" VerticalAlignment="Top" FontFamily = "Segoe Script" FontWeight = "UltraBold"/>
-                <Button x:Name="m12" FontSize="40px" HorizontalAlignment="Left" Width="75" Height="75" Margin="350,250,0,0" VerticalAlignment="Top" FontFamily = "Segoe Script" FontWeight = "UltraBold"/>
-                <Button x:Name="m13" FontSize="40px" HorizontalAlignment="Left" Width="75" Height="75" Margin="50,350,0,0" VerticalAlignment="Top" FontFamily = "Segoe Script" FontWeight = "UltraBold"/>
-                <Button x:Name="m14" FontSize="40px" HorizontalAlignment="Left" Width="75" Height="75" Margin="150,350,0,0" VerticalAlignment="Top" FontFamily = "Segoe Script" FontWeight = "UltraBold"/>
-                <Button x:Name="m15" FontSize="40px" HorizontalAlignment="Left" Width="75" Height="75" Margin="250,350,0,0" VerticalAlignment="Top" FontFamily = "Segoe Script" FontWeight = "UltraBold"/>
-                <Button x:Name="m16" FontSize="40px" HorizontalAlignment="Left" Width="75" Height="75" Margin="350,350,0,0" VerticalAlignment="Top" FontFamily = "Segoe Script" FontWeight = "UltraBold"/>
+                <Button x:Name="m5" FontSize="40px" HorizontalAlignment="Left" Width="75" Height="75" Margin="450,50,0,0" VerticalAlignment="Top" FontFamily = "Segoe Script" FontWeight = "UltraBold"/>
+                <Button x:Name="m6" FontSize="40px" HorizontalAlignment="Left" Width="75" Height="75" Margin="50,150,0,0" VerticalAlignment="Top" FontFamily = "Segoe Script" FontWeight = "UltraBold"/>
+                <Button x:Name="m7" FontSize="40px" HorizontalAlignment="Left" Width="75" Height="75" Margin="150,150,0,0" VerticalAlignment="Top" FontFamily = "Segoe Script" FontWeight = "UltraBold"/>
+                <Button x:Name="m8" FontSize="40px" HorizontalAlignment="Left" Width="75" Height="75" Margin="250,150,0,0" VerticalAlignment="Top" FontFamily = "Segoe Script" FontWeight = "UltraBold"/>
+                <Button x:Name="m9" FontSize="40px" HorizontalAlignment="Left" Width="75" Height="75" Margin="350,150,0,0" VerticalAlignment="Top" FontFamily = "Segoe Script" FontWeight = "UltraBold"/>
+                <Button x:Name="m10" FontSize="40px" HorizontalAlignment="Left" Width="75" Height="75" Margin="450,150,0,0" VerticalAlignment="Top" FontFamily = "Segoe Script" FontWeight = "UltraBold"/>
+                <Button x:Name="m11" FontSize="40px" HorizontalAlignment="Left" Width="75" Height="75" Margin="50,250,0,0" VerticalAlignment="Top" FontFamily = "Segoe Script" FontWeight = "UltraBold"/>
+                <Button x:Name="m12" FontSize="40px" HorizontalAlignment="Left" Width="75" Height="75" Margin="150,250,0,0" VerticalAlignment="Top" FontFamily = "Segoe Script" FontWeight = "UltraBold"/>
+                <Button x:Name="m13" FontSize="40px" HorizontalAlignment="Left" Width="75" Height="75" Margin="250,250,0,0" VerticalAlignment="Top" FontFamily = "Segoe Script" FontWeight = "UltraBold"/>
+                <Button x:Name="m14" FontSize="40px" HorizontalAlignment="Left" Width="75" Height="75" Margin="350,250,0,0" VerticalAlignment="Top" FontFamily = "Segoe Script" FontWeight = "UltraBold"/>
+                <Button x:Name="m15" FontSize="40px" HorizontalAlignment="Left" Width="75" Height="75" Margin="450,250,0,0" VerticalAlignment="Top" FontFamily = "Segoe Script" FontWeight = "UltraBold"/>
 
 
-            </Grid>
-            <Grid x:Name="enemynumbers" Margin="870,39,115,182">
-                <Button x:Name="e1" FontSize="40px" HorizontalAlignment="Left" Width="75" Height="75" Margin="50,50,0,0" VerticalAlignment="Top" FontFamily = "Segoe Script" FontWeight = "UltraBold"/>
-                <Button x:Name="e2" FontSize="40px" HorizontalAlignment="Left" Width="75" Height="75" Margin="150,50,0,0" VerticalAlignment="Top" FontFamily = "Segoe Script" FontWeight = "UltraBold"/>
-                <Button x:Name="e3" FontSize="40px" HorizontalAlignment="Left" Width="75" Height="75" Margin="250,50,0,0" VerticalAlignment="Top" FontFamily = "Segoe Script" FontWeight = "UltraBold"/>
-                <Button x:Name="e4" FontSize="40px" HorizontalAlignment="Left" Width="75" Height="75" Margin="350,50,0,0" VerticalAlignment="Top" FontFamily = "Segoe Script" FontWeight = "UltraBold"/>
-                <Button x:Name="e5" FontSize="40px" HorizontalAlignment="Left" Width="75" Height="75" Margin="50,150,0,0" VerticalAlignment="Top" FontFamily = "Segoe Script" FontWeight = "UltraBold"/>
-                <Button x:Name="e6" FontSize="40px" HorizontalAlignment="Left" Width="75" Height="75" Margin="150,150,0,0" VerticalAlignment="Top" FontFamily = "Segoe Script" FontWeight = "UltraBold"/>
-                <Button x:Name="e7" FontSize="40px" HorizontalAlignment="Left" Width="75" Height="75" Margin="250,150,0,0" VerticalAlignment="Top" FontFamily = "Segoe Script" FontWeight = "UltraBold"/>
-                <Button x:Name="e8" FontSize="40px" HorizontalAlignment="Left" Width="75" Height="75" Margin="350,150,0,0" VerticalAlignment="Top" FontFamily = "Segoe Script" FontWeight = "UltraBold"/>
-                <Button x:Name="e9" FontSize="40px" HorizontalAlignment="Left" Width="75" Height="75" Margin="50,250,0,0" VerticalAlignment="Top" FontFamily = "Segoe Script" FontWeight = "UltraBold"/>
-                <Button x:Name="e10" FontSize="40px" HorizontalAlignment="Left" Width="75" Height="75" Margin="150,250,0,0" VerticalAlignment="Top" FontFamily = "Segoe Script" FontWeight = "UltraBold"/>
-                <Button x:Name="e11" FontSize="40px" HorizontalAlignment="Left" Width="75" Height="75" Margin="250,250,0,0" VerticalAlignment="Top" FontFamily = "Segoe Script" FontWeight = "UltraBold"/>
-                <Button x:Name="e12" FontSize="40px" HorizontalAlignment="Left" Width="75" Height="75" Margin="350,250,0,0" VerticalAlignment="Top" FontFamily = "Segoe Script" FontWeight = "UltraBold"/>
-                <Button x:Name="e13" FontSize="40px" HorizontalAlignment="Left" Width="75" Height="75" Margin="50,350,0,0" VerticalAlignment="Top" FontFamily = "Segoe Script" FontWeight = "UltraBold"/>
-                <Button x:Name="e14" FontSize="40px" HorizontalAlignment="Left" Width="75" Height="75" Margin="150,350,0,0" VerticalAlignment="Top" FontFamily = "Segoe Script" FontWeight = "UltraBold"/>
-                <Button x:Name="e15" FontSize="40px" HorizontalAlignment="Left" Width="75" Height="75" Margin="250,350,0,0" VerticalAlignment="Top" FontFamily = "Segoe Script" FontWeight = "UltraBold"/>
-                <Button x:Name="e16" FontSize="40px" HorizontalAlignment="Left" Width="75" Height="75" Margin="350,350,0,0" VerticalAlignment="Top" FontFamily = "Segoe Script" FontWeight = "UltraBold"/>
             </Grid>
             <Label x:Name="nightscount" Content="night 1" Foreground="Red" FontSize="30" HorizontalAlignment="Left" Margin="1333,27,0,0" VerticalAlignment="Top" Height="50" Width="121"/>
         </Grid>
@@ -90,7 +70,7 @@
 
 
         </Grid>
-        <Grid x:Name="Won" Margin="50,50,50,50">
+        <Grid x:Name="Won" Margin="50,50,50,50" d:IsHidden="True">
             <Label Content="You Won!" Foreground="Green" FontSize="60"  HorizontalAlignment="Center" Margin="0,115,0,0" VerticalAlignment="Top" Height="111" Width="268"/>
             <Label x:Name="pluszinkwonsc" Content="+20 Inks" FontSize="40" Foreground="Blue" HorizontalAlignment="Center" Margin="0,319,0,0" VerticalAlignment="Top" />
             <Label x:Name="nightsurvivedwonsc" Content="Day 1 survived" Foreground="White" FontSize="40" HorizontalAlignment="Center" Margin="0,226,0,0" VerticalAlignment="Top" Height="61" Width="322"/>
